@@ -2,35 +2,35 @@ from flask import Flask, jsonify, make_response, request
 from flask_security import Security, auth_required, roles_accepted, roles_required
 
 from models import db, test, user_datastore
-# app = Flask(__name__)
-# import config
-# app.config.from_object(config)
-
-# from models import db, test
-# db.init_app(app)
-
-# from models import user_datastore
-# Security(app, user_datastore)
 
 def create_app():
     init_app = Flask(__name__)
-    import config
-    init_app.config.from_object(config)
+    # import config
+    # init_app.config.from_object(config)
+
+    from config import DevelopmentConfig
+    init_app.config.from_object(DevelopmentConfig)
 
     db.init_app(init_app)
 
     Security(init_app, user_datastore)
-    return init_app
 
-app = create_app()
+    from flask_restful import Api
+    init_api = Api(init_app, prefix='/api')
 
-# with app.app_context():
-#     db.create_all()
+    return init_app, init_api
+
+app, api = create_app()
 
 
-@app.route('/helloworld')
+@app.route('/helloworld') # /helloworld
 def hello_world():
     return 'Hello, World!'
+
+from routes.test import helloworld, test
+api.add_resource(helloworld, '/helloworld') # /api/helloworld
+api.add_resource(test, '/', '/<int:pathArg>') # /api/test
+
 
 @app.route('/get')
 def get():
@@ -69,6 +69,17 @@ def retrieve():
     var2 = db_data.var2FromDb
     var3 = db_data.var3FromDb
     return jsonify({'str':var1, 'bool':var2, 'int':var3})
+
+@app.route('/retrieve/<int:idFromRequest>')
+@auth_required('token')
+@roles_accepted('admin', 'manager') # changed in day 3
+def retrieveFromPath(idFromRequest):
+    db_data = test.query.filter_by(id=idFromRequest).first()
+    var1 = db_data.var1FromDb
+    var2 = db_data.var2FromDb
+    var3 = db_data.var3FromDb
+    return jsonify({'str':var1, 'bool':var2, 'int':var3})
+
 
 # http status codes
 @app.route('/store', methods=['POST'])
@@ -169,10 +180,6 @@ def register_api():
     email_var = form_data['emailFromRequest']
     password_var = form_data['passwordFromRequest']
     role_var = form_data['roleFromRequest'] #its in a string format
-    # print('var1: ', var1, 'var2: ', var2, 'var3: ', var3)
-    # new_data = test(var1FromDb=var1, var2FromDb=var2, var3FromDb=var3)
-    # db.session.add(new_data)
-    # db_data = test.query.filter_by(id=idFromRequest).first()
     present_user = user_datastore.find_user(email=email_var)
     if not present_user:
         # new_user = user_datastore.create_user(email=email_var, password=password_var, roles=[role_var, role_var1], active=True)

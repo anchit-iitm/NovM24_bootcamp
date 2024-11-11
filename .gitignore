@@ -1,6 +1,7 @@
 .venv/
 .venv_day1/
 .venv_day2/
+.venv_day3/
 __pycache__/
 
 instance/
