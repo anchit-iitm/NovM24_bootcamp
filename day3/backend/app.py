@@ -27,9 +27,10 @@ app, api = create_app()
 def hello_world():
     return 'Hello, World!'
 
-from routes.test import helloworld, test
+from routes.test import helloworld, test, storeNew
 api.add_resource(helloworld, '/helloworld') # /api/helloworld
 api.add_resource(test, '/', '/<int:pathArg>') # /api/test
+api.add_resource(storeNew, '/storeNew') # /api/storeNew
 
 
 @app.route('/get')
