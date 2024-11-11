@@ -18,3 +18,8 @@ node -v # should print `v23.1.0`
 
 # verifies the right npm version is in the environment
 npm -v # should print `10.9.0`
+
+
+index.html <- {main.js} <- app.vue <- {vue-router/router.index.js} <- views(from the views dir)
+
+view = homeview <- helloworld
