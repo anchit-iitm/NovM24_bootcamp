@@ -1,6 +1,10 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
+    <router-link :to="{name: 'testRoute'}">Test</router-link> |
+    <router-link :to="{name: 'registerRoute'}">Register</router-link> |
+    <router-link :to="{name: 'loginRoute'}">Login</router-link> |
+    <router-link :to="{name: 'homeRoute'}">Dashboard</router-link> |
     <router-link to="/about">About</router-link>
   </nav>
   <router-view/>

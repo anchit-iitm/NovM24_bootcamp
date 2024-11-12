@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask import jsonify, make_response
-
+from flask_security import auth_required, roles_accepted
 # methods=['GET']
 # def hello_world():
 #     return 'Hello, World!'
@@ -10,7 +10,7 @@ class helloworld(Resource):
         return 'Hello, World!'
     
 
-class test(Resource):
+class testing(Resource):
     def get(self):
         return make_response(jsonify({'message': 'GET request successful'}), 200)
     
@@ -20,6 +20,9 @@ class test(Resource):
     def put(self, pathArg):
         return make_response(jsonify({'message': 'PUT request successful', 'variable_passed': pathArg}), 200)
     
+    # def put(self):
+    #     return make_response(jsonify({'message': 'PUT request successful'}), 200)
+
     def delete(self):
         return make_response(jsonify({'message': 'DELETE request successful'}), 200)
     
@@ -27,6 +30,8 @@ class test(Resource):
 from flask import request
 from models import db, test
 class storeNew(Resource):
+    @auth_required('token')
+    @roles_accepted('admin', 'manager')
     def post(self):
         form_data = request.get_json()
         var1 = form_data['var1FromRequest']
@@ -37,6 +42,8 @@ class storeNew(Resource):
         db.session.add(new_data)
         db.session.commit()
         return make_response(jsonify({'id': new_data.id, 'str':new_data.var1FromDb, 'bool':new_data.var2FromDb, 'int':new_data.var3FromDb}), 201)  
+    @auth_required('token')
+    @roles_accepted('admin', 'manager')
     def put(self):
         form_data = request.get_json()
         id = form_data['idFromJson']
@@ -52,6 +59,8 @@ class storeNew(Resource):
             return make_response(jsonify({'id': db_data.id, 'str':db_data.var1FromDb, 'bool':db_data.var2FromDb, 'int':db_data.var3FromDb}), 202)
         else:
             return make_response(jsonify({'error': 'id not found'}), 404)
+    @auth_required('token')
+    @roles_accepted('admin', 'manager')
     def delete(self):
         form_data = request.get_json()
         id = form_data['idFromJson']
@@ -62,3 +71,8 @@ class storeNew(Resource):
             return make_response(jsonify({'id': db_data.id, 'str':db_data.var1FromDb, 'bool':db_data.var2FromDb, 'int':db_data.var3FromDb}), 202)
         else:
             return make_response(jsonify({'error': 'id not found'}), 404)
+
+    @auth_required('token')  
+    def get(self):
+        from flask_security import current_user
+        return make_response(jsonify({'message': 'GET request successful', 'email': current_user.email, 'role': current_user.roles[0].name, 'status': current_user.active}), 200)

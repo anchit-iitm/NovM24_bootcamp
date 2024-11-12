@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, make_response, request
 from flask_security import Security, auth_required, roles_accepted, roles_required
 
+
 from models import db, test, user_datastore
 
 def create_app():
@@ -18,6 +19,9 @@ def create_app():
     from flask_restful import Api
     init_api = Api(init_app, prefix='/api')
 
+    from flask_cors import CORS
+    CORS(init_app)
+
     return init_app, init_api
 
 app, api = create_app()
@@ -27,9 +31,9 @@ app, api = create_app()
 def hello_world():
     return 'Hello, World!'
 
-from routes.test import helloworld, test, storeNew
+from routes.test import helloworld, testing, storeNew
 api.add_resource(helloworld, '/helloworld') # /api/helloworld
-# api.add_resource(test, '/', '/<int:pathArg>') # /api/test
+api.add_resource(testing, '/', '/<int:pathArg>') # /api/test
 api.add_resource(storeNew, '/storeNew') # /api/storeNew
 
 
@@ -192,7 +196,7 @@ def register_api():
             user_datastore.add_role_to_user(new_user, role_var)
         # user_datastore.add_role_to_user(new_user, role_var1)
         db.session.commit()
-        return make_response(jsonify({'id': new_user.id, 'email':new_user.email, 'roles':new_user.roles[0].name}), 201)
+        return make_response(jsonify({'id': new_user.id, 'email':new_user.email, 'roles':new_user.roles[0].name, 'message': 'registration successful'}), 201)
     return make_response(jsonify({'email_provided': present_user.email, 'message':'user already exists'}), 409)
 
 
@@ -201,7 +205,7 @@ def login_api():
     form_data = request.get_json()
     email_var = form_data['emailFromRequest']
     password_var = form_data['passwordFromRequest']
-    role_var = form_data['roleFromRequest']
+    # role_var = form_data['roleFromRequest'] # not needed
     present_user = user_datastore.find_user(email=email_var)
     if not present_user:
         return make_response(jsonify({'email': email_var, 'message':"email id is not registered with us"}), 404)
@@ -209,7 +213,7 @@ def login_api():
         return make_response(jsonify({'email': email_var, 'message':"user is not active, please talk to admin"}), 401)
     if present_user.password == password_var:
         auth_token = present_user.get_auth_token()
-        return make_response(jsonify({"authToken": auth_token,'email_provided': present_user.email, 'message':'user already exists and password is correct'}), 200)
+        return make_response(jsonify({"authToken": auth_token,'email_provided': present_user.email, 'message':'user already exists and password is correct', 'role': present_user.roles[0].name}), 201)
     return make_response(jsonify({'email_provided': present_user.email, 'message':'password is incorrect'}), 401)
 
 
