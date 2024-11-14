@@ -36,6 +36,14 @@ api.add_resource(helloworld, '/helloworld') # /api/helloworld
 api.add_resource(testing, '/', '/<int:pathArg>') # /api/test
 api.add_resource(storeNew, '/storeNew') # /api/storeNew
 
+from routes.products import ProductResource, ProductSpecific
+api.add_resource(ProductResource, '/product') # /api/products
+api.add_resource(ProductSpecific, '/product/<int:id>') # /api/products/<id>
+
+from routes.category import CategoryResource, CategorySpecific
+api.add_resource(CategoryResource, '/category') # /api/category
+api.add_resource(CategorySpecific, '/category/<int:id>') # /api/category/<id>
+
 
 @app.route('/get')
 def get():

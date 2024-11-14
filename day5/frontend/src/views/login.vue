@@ -37,7 +37,7 @@ export default {
                         }
                     )
                     .then((response) => {
-                        console.log("good response",response)
+                        // console.log("good response",response)
                         this.frontend_message = response.data
                         if(response.status == 201){
                             localStorage.setItem('authToken', response.data.authToken)

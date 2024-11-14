@@ -38,6 +38,16 @@ const routes = [
     path: '/home',
     name: 'homeRoute',
     component: () => import('@/views/dashboard.vue')
+  },
+  {
+    path: '/category/create',
+    name: 'categoryCreateRoute',
+    component: () => import('@/views/categoryCreate.vue')
+  },
+  {
+    path: '/product/create',
+    name: 'productCreateRoute',
+    component: () => import('@/views/productCreate.vue')
   }
 ]
 

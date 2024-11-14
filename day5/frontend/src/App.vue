@@ -5,10 +5,26 @@
     <router-link :to="{name: 'registerRoute'}">Register</router-link> |
     <router-link :to="{name: 'loginRoute'}">Login</router-link> |
     <router-link :to="{name: 'homeRoute'}">Dashboard</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link :to="{name: 'categoryCreateRoute'}">Add Category</router-link> |
+    <router-link :to="{name: 'productCreateRoute'}">Add Product</router-link> |
+    <router-link to="/about">About</router-link> |
+    <a @click="this.logout()">Logout</a>
   </nav>
   <router-view/>
 </template>
+
+<script>
+export default {
+  methods: {
+    logout() {
+      if (localStorage.getItem('authToken')){
+        localStorage.clear();
+        this.$router.push({name: 'loginRoute'});
+      }
+    }
+  }
+}
+</script>
 
 <style>
 #app {
